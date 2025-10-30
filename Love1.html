@@ -1,0 +1,90 @@
+<html lang="zh-CN">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>温馨提示弹幕</title>
+     <style>
+         .tip-box {
+             position: fixed;
+             padding: 15px 20px; /* 适配手机的紧凑内边距 */
+             border-radius: 12px;
+             font-family: "微软雅黑";
+             font-size: 14px; /* 手机端减小字体 */
+             text-align: center;
+             z-index: 9999;
+             touch-action: manipulation; /* 优化手机触摸交互 */
+         }
+         body {
+             margin: 0;
+             overflow: hidden;
+             background-color: #f5f5f5; /* 浅色背景提升可读性 */
+         }
+     </style>
+ </head>
+ <body>
+     <script>
+         // 提示文字列表（可补充更多内容）
+         const TIPS = [
+             '多喝水哦~', '保持微笑呀', '每天都要元气满满',
+             '记得吃水果', '保持好心情', '好好爱自己', '我想你了',
+             '梦想成真', '期待下一次见面', '金榜题名',
+             '顺顺利利', '早点休息', '愿所有烦恼都消失',
+             '别熬夜', '今天过得开心嘛', '天冷了，多穿衣服',
+             '你已经很棒啦', '累了就休息一下', '今天也要加油呀'
+         ];
+         // 背景颜色列表（增加更多柔和配色）
+         const BG_COLORS = [
+             'lightpink', 'skyblue', 'lightgreen', 'lavender',
+             'lightyellow', 'plum', 'coral', 'bisque',
+             'aquamarine', 'mistyrose', 'honeydew', 'lavenderblush'
+         ];
+         // 弹窗数量改为200
+         const COUNT = 200;
+         // 弹窗生成间隔（从50ms改为30ms，加快生成速度）
+         const DELAY = 30;
+         // 创建弹窗（优化手机触摸关闭）
+         function createTip() {
+             const tipBox = document.createElement('div');
+             tipBox.className = 'tip-box';
+             // 随机文字、颜色
+             tipBox.innerText = TIPS[Math.floor(Math.random() * TIPS.length)];
+             tipBox.style.backgroundColor = BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)];
+             // 随机位置（适配手机屏幕，避免超出）
+             tipBox.style.left = `${Math.random() * (window.innerWidth - 180)}px`;
+             tipBox.style.top = `${Math.random() * (window.innerHeight - 80)}px`;
+             // 手机触摸/电脑点击关闭
+             tipBox.addEventListener('click', () => tipBox.remove());
+             tipBox.addEventListener('touchstart', (e) => {
+                 e.preventDefault(); // 阻止默认触摸行为
+                 tipBox.remove();
+             });
+             document.body.appendChild(tipBox);
+         }
+         // 批量生成200个弹窗（分批次生成，避免卡顿）
+         let currentIndex = 0;
+         const batchSize = 20; // 每批次生成20个
+         function generateBatch() {
+             for (let i = 0; i < batchSize && currentIndex < COUNT; i++) {
+                 setTimeout(createTip, i * DELAY);
+                 currentIndex++;
+             }
+             if (currentIndex < COUNT) {
+                 setTimeout(generateBatch, batchSize * DELAY);
+             }
+         }
+         generateBatch();
+         // 手机端：点击空白处关闭所有弹窗（替代空格键）
+         document.addEventListener('touchstart', (e) => {
+             if (e.target === document.body) {
+                 document.querySelectorAll('.tip-box').forEach(box => box.remove());
+             }
+         });
+         // 电脑端：空格键关闭所有弹窗
+         document.addEventListener('keydown', (e) => {
+             if (e.code === 'Space') {
+                 document.querySelectorAll('.tip-box').forEach(box => box.remove());
+             }
+         });
+     </script>
+ </body>
+ </html>
